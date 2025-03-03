@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Other Page</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="{{ url_for('static', filename='front.js') }}"></script> <!-- Link to JS file -->
+
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">NYC Job Data</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('other_page') }}">DOB NOW Jobs</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>Welcome to the DOB NOW Jobs' Page</h1>
+        <p>This is where you can find the jobs posted on DOB NOW, the Department's self-service online tool.
+            It has a different database than "DOB Job", as that handles all job applications submitted through Borough
+            Offices,
+            through eFiling, or through the HUB.</p>
+
+        <form method="POST">
+            <label for="date_filter">Select Date:</label>
+            <input type="date" id="date_filter" name="date_filter" value="{{ selected_date }}">
+            <label for="contractor_name">Contractor's Business Name:</label>
+            <select id="contractor_name" name="contractor_name">
+                <option value="">All</option>
+                {% for contractor in contractor_names %}
+                <option value="{{ contractor }}" {% if contractor==selected_contractor_name %}selected{% endif %}>{{
+                    contractor }}</option>
+                {% endfor %}
+
+            </select>
+            <br><br>
+            <label for="boroughs">Select Boroughs:</label>
+            <select id="boroughs" name="boroughs" multiple>
+                {% for borough in boroughs %}
+                <option value="{{ borough }}" {% if borough in selected_boroughs %}selected{% endif %}>{{ borough }}
+                </option>
+                {% endfor %}
+            </select>
+            <label for="job_status">Select Job Status:</label>
+            <select id="job_status" name="job_status">
+                <option value="">All</option>
+                {% for status in job_statuses %}
+                <option value="{{ status }}" {% if status==selected_job_status %}selected{% endif %}>{{ status }}
+                </option>
+                {% endfor %}
+            </select>
+            <br><br>
+
+            <div class="dropdown">
+                <button class="dropbtn">Select Keywords</button>
+                <div class="dropdown-content">
+                    {% for category, words in keyword_dict.items() %}
+                    <strong>{{ category }}</strong><br>
+                    {% for word in words %}
+                    <label>
+                        <input type="checkbox" name="description_keywords" value="{{ word.lower() }}" {% if word.lower()
+                            in selected_keywords %}checked{% endif %}>
+                        {{ word }}
+                    </label><br>
+                    {% endfor %}
+                    <hr>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <input type="submit" value="Filter">
+
+
+            <br><br>
+
+
+        </form>
+        <h2>Filtered Data</h2>
+        <div class="table-container">
+            <table id="myTable" border="1">
+                <tr>
+                    <th>Job #</th>
+                    <th>Owner Name</th>
+                    <!--Number does not exist <th>Owner's Phone #</th>-->
+                    <th>Contractor Name</th>
+                    <th>Contractor Business Name</th>
+                    <th>Job Address</th>
+                    <th onclick="sortTable(0)">Filing Date</th>
+                    <th>Borough</th>
+                    <th>Job Description</th>
+                </tr>
+                {% for row in data %}
+                <tr>
+                    <td>{{ row["Job Filing Number"] }}</td>
+                    <td>{{ row["Owner Name"] }}</td>
+                    <!--Number does not exist <th>Owner's Phone #</th>-->
+                    <td>{{ row["Contractor Name"] }}</td>
+                    <td>{{ row["Contractor Business Name"] }}</td>
+                    <td>{{ row["Job Address"] }}</td>
+                    <td>{{ row["Filing Date"] }}</td>
+                    <td>{{ row["Borough"] }}</td>
+                    <td>{{ row["Job Description"] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
