@@ -1,0 +1,98 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    /* Prevents horizontal scrolling */
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropbtn {
+    background-color: #3498db;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 250px;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+label {
+    display: block;
+    margin: 5px 0;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #ddd;
+    margin: 5px 0;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    /* Enables horizontal scrolling */
+    margin: 0 auto;
+    /* Center the table container */
+    max-width: 100%;
+    /* Prevents overflow beyond container */
+}
+
+.table-container {
+    overflow-x: auto;
+    max-width: 100%;
+    min-height: calc(100vh - 150px);
+    /* Adjust based on your layout */
+}
+
+table {
+
+    /*width: 120%;*/
+    border-collapse: collapse;
+    margin-top: 20px;
+    min-width: 100%;
+
+}
+
+th,
+td {
+    cursor: pointer;
+    border: 1px solid black !important;
+    padding: 5px !important;
+    text-align: left;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+
+    /* Prevent text from wrapping */
+
+}
+
+th {
+    background-color: #2699db;
+}
+
+tr:nth-child(even) {
+    background-color: #f0eded;
+}
