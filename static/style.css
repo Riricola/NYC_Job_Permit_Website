@@ -1,3 +1,48 @@
+/* Add these styles to your existing CSS */
+.status-key {
+    margin-top: 20px;
+    position: sticky;
+    top: 20px;
+}
+
+.status-key th,
+.status-key td {
+    padding: 5px !important;
+    white-space: normal;
+}
+
+.status-key th {
+    background-color: #2699db;
+    color: white;
+}
+
+.status-key td:first-child {
+    font-weight: bold;
+    width: 90px;
+}
+
+/* Make the form elements a bit nicer */
+form label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+form select,
+form input[type="text"],
+form input[type="date"] {
+    width: 100%;
+    max-width: 300px;
+    padding: 6px;
+    margin-bottom: 5px;
+}
+
+form input[type="submit"],
+form button {
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
 html,
 body {
     height: 100%;
@@ -62,8 +107,9 @@ hr {
 
 .table-container {
     overflow-x: auto;
-    max-width: 100%;
+    width: 100%;
     min-height: calc(100vh - 150px);
+    display: block;
     /* Adjust based on your layout */
 }
 
@@ -95,4 +141,14 @@ th {
 
 tr:nth-child(even) {
     background-color: #f0eded;
+}
+
+td:nth-child(3) {
+    /* Assuming Phone Number is in the 3rd column */
+    white-space: nowrap;
+    /* Prevents wrapping */
+    width: 150px;
+    /* Adjust as needed */
+    text-align: center;
+    /* Centers the content */
 }
