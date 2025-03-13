@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Filter</title>
+    <title>DOB Jobs with Permits</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="{{ url_for('static', filename='front.js') }}"></script> <!-- Link to JS file -->
@@ -36,91 +36,237 @@
             jobs that have been completed, or that were rejected/denied</p>
 
         <form method="POST">
-            <label for="date_filter">Select Date:</label>
-            <input type="date" id="date_filter" name="date_filter" value="{{ selected_date }}">
-            <br><br>
-            <label for="boroughs">Select Boroughs:</label>
-            <select id="boroughs" name="boroughs" multiple>
-                {% for borough in boroughs %}
-                <option value="{{ borough }}" {% if borough in selected_boroughs %}selected{% endif %}>{{ borough }}
-                </option>
-                {% endfor %}
-            </select>
-            <br><br>
+            <div class="row">
+                <!-- Left column for filters -->
+                <div class="col-md-4">
 
-            <div class="dropdown">
-                <button class="dropbtn">Select Keywords</button>
-                <div class="dropdown-content">
-                    {% for category, words in keyword_dict.items() %}
-                    <strong>{{ category }}</strong><br>
-                    {% for word in words %}
-                    <label>
-                        <input type="checkbox" name="description_keywords" value="{{ word.lower() }}" {% if word.lower()
-                            in selected_keywords %}checked{% endif %}>
-                        {{ word }}
-                    </label><br>
-                    {% endfor %}
-                    <hr>
-                    {% endfor %}
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="date_filter">Select Date:</label>
+                            <input type="date" id="date_filter" name="date_filter" value="{{ selected_date }}">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+
+                        <div class="col-md-6">
+
+                            <label for="boroughs" class="form-label">Select Boroughs:</label>
+                            <select id="boroughs" name="boroughs" multiple>
+                                {% for borough in boroughs %}
+                                <option value="{{ borough }}" {% if borough in selected_boroughs %}selected{% endif %}>
+                                    {{ borough }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <br>
+                        <small class="text-muted">Hold Ctrl/Cmd to select multiple boroughs</small>
+
+                        <div class="col-md-8">
+                            <label for="job_status">Select Job Status:</label>
+                            <select id="job_status" name="job_status">
+                                <option value="">All</option>
+                                {% for status in job_statuses %}
+                                <option value="{{ status }}" {% if status==selected_job_status %}selected{% endif %}>{{
+                                    status
+                                    }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="search" class="form-label">Search by keyword:</label>
+                        <input type="text" name="search" id="search" class="form-control"
+                            placeholder="Type a keyword..." value="{{ search_query }}">
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="keywordDropdown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Select Keywords
+                            </button>
+                            <div class="dropdown-menu p-3" aria-labelledby="keywordDropdown" style="width: 300px;">
+                                {% for category, words in keyword_dict.items() %}
+                                <h6>{{ category }}</h6>
+                                {% for word in words %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="description_keywords"
+                                        value="{{ word.lower() }}" id="keyword-{{ loop.index }}" {% if word.lower() in
+                                        selected_keywords %}checked{% endif %}>
+                                    <label class="form-check-label" for="keyword-{{ loop.index }}">{{ word }}</label>
+                                </div>
+                                {% endfor %}
+                                <hr>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            <a href="{{ url_for('index') }}" class="btn btn-secondary">Clear Filters</a>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Right column for status code key -->
+
+                <div class="col-md-8">
+                    <div class="card status-key">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">Status Code Key</h4>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Status Code</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Permit Issued - Entire Job/Work</td>
+                                        <td>A permit has been issued for the job filing</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Plan Exam - Approved/Disproved/In Process</td>
+                                        <td>Application is being reviewed by Plan Examiner, or it has been
+                                            approved/disproved.
+                                            If disproved, the application may be refiled or it may have been rejected
+                                            fully.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Application Processed - Entire</td>
+                                        <td>Application has been processed but not yet filed a permit.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Application Assigned to Plan Examiner</td>
+                                        <td>The application has been assigned to a plan examiner for approval.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Signed Off</td>
+                                        <td>The job is completed and ready for handover to the owner</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pre-Filing</td>
+                                        <td>Job filing is checked for completeness, estimates job cost and determines
+                                            job
+                                            type</td>
+                                    </tr>
+                                    <tr>
+                                        <td>P/E PAA - Pending Fee Estimation</td>
+                                        <td>When there is a minor change in the original project plans, a
+                                            Post Approval Amendment (PAA) is filed.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <br><br>
-            <label for="contractor_name">Contractor's Business Name:</label>
-            <select id="contractor_name" name="contractor_name">
-                <option value="">All</option>
-                {% for contractor in contractor_names %}
-                <option value="{{ contractor }}" {% if contractor==selected_contractor_name %}selected{% endif %}>{{
-                    contractor }}</option>
-                {% endfor %}
-            </select>
-            <br><br>
 
-            <label for="job_status">Select Job Status:</label>
-            <select id="job_status" name="job_status">
-                <option value="">All</option>
-                {% for status in job_statuses %}
-                <option value="{{ status }}" {% if status==selected_job_status %}selected{% endif %}>{{ status }}
-                </option>
-                {% endfor %}
-            </select>
-            <br><br>
 
-            <input type="submit" value="Filter">
-        </form>
-        <h2>Filtered Data</h2>
-        <div class="table-container">
-            <table id="myTable" border="1">
 
-                <tr>
-                    <th>Job #</th>
-                    <th>Owner's Name</th>
-                    <th>Contractor's Name</th>
-                    <th>Contractor's Business Name</th>
-                    <th>Contractor's Phone #</th>
-                    <th>Job Address</th>
-                    <th onclick="sortTable(0)">Filing Date</th> <!-- Clickable header for sorting -->
-                    <th>Borough</th>
-                    <th>Job Status</th>
-                    <th>Job Description</th>
-                </tr>
-                {% for row in data %}
-                <tr>
-                    <td>{{ row["Job #"] }}</td>
-                    <td>{{ row["Owner Name"] }}</td>
-                    <td>{{ row ["Permittee's Name"] }}</td>
-                    <td>{{ row["Permittee's Business Name"] }}</td>
-                    <td>{{ row["Permittee's Phone #"] }}</td>
-                    <td>{{ row["Job Address"] }}</td>
-                    <td>{{ row["Filing Date"] }}</td>
-                    <td>{{ row["Borough"] }}</td>
-                    <td>{{ row["Job Status Descrp"] }}</td>
-                    <td>{{ row["Job Description"] }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
+            <h2>Filtered Table ({{ data|length }} records on this page)</h2>
+            {% if total_pages > 0 %}
+            <div class="table-responsive">
+                <table id="myTable" class="table table-striped table-bordered">
+
+                    <tr>
+                        <th>Job #</th>
+                        <th>Owner's Name</th>
+                        <th onclick="formatPhoneNumber()">Owner's Phone #</th>
+                        <th>Contractor's Name</th>
+
+
+                        <th>Job Address</th>
+                        <th onclick="sortTable(5)">Pre- Filing Date</th>
+                        <th>Borough</th>
+                        <th>Job Status</th>
+                        <th>Job Description</th>
+                    </tr>
+                    {% for row in data %}
+                    <tr>
+                        <td>{{ row["Job #"] }}</td>
+                        <td>{{ row["Owner Name"] }}</td>
+                        <td>
+                            {% set phone = row["Owner'sPhone #"]|string %}
+                            {% if phone|length == 10 and phone.isdigit() %}
+                            ({{ phone[:3] }}) {{ phone[3:6] }}-{{ phone[6:] }}
+                            {% else %}
+                            {{ phone }}
+                            {% endif %}
+                        </td>
+
+                        <td>{{ row["Applicant Name"] }}</td>
+                        <!--  <td>{{ row["Permittee's Business Name"] if row["Permittee's Business Name"] and row["Permittee's
+                        Business Name"] != "nan" else "nan" }}</td>  -->
+
+                        <td>{{ row["Job Address"] }}</td>
+                        <td>{{ row["Pre- Filing Date"] }}</td>
+                        <td>{{ row["Borough"] }}</td>
+                        <td>{{ row["Job Status Descrp"] }}</td>
+                        <td>{{ row["Job Description"] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('index', page=page-1, 
+                            date_filter=selected_date, 
+                            boroughs=selected_boroughs, 
+                            search=search_query, 
+                            contractor_name=selected_contractor_name, 
+                            description_keywords=selected_keywords) }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+
+                    <li class="page-item active">
+                        <span class="page-link">Page {{ page }} of {{ total_pages }}</span>
+                    </li>
+
+                    <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('index', page=page+1, 
+                            date_filter=selected_date, 
+                            boroughs=selected_boroughs, 
+                            search=search_query, 
+                            contractor_name=selected_contractor_name, 
+                            description_keywords=selected_keywords) }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            {% else %}
+            <div class="alert alert-info">
+                No data to display. Please select at least one borough and apply filters.
+            </div>
+            {% endif %}
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function formatPhoneNumber(number) {
+            let str = number.toString();
+            return `(${str.slice(0, 3)}) ${str.slice(3, 6)}-${str.slice(6)}`;
+        }
+
+        let phoneNumber = 1234567890; // Replace this with your actual number
+        document.getElementById("formattedPhone").textContent = formatPhoneNumber(phoneNumber);
+    </script>
+
 </body>
 
 </html>
